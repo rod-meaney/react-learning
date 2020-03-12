@@ -47,9 +47,9 @@ class Home extends React.Component {
             <br />
             A game of guessing fun for all the family and your crazy friends.
           </p>
-          <Link to={`/temp-play`}><Button variant="primary">Play time</Button></Link>
+          <Link to={`${process.env.PUBLIC_URL}/temp-play`}><Button variant="primary">Play time</Button></Link>
           {" "}
-          <Link to={`/fetching`}><Button variant="primary">Fetching stuff</Button></Link>
+          <Link to={`${process.env.PUBLIC_URL}/fetching`}><Button variant="primary">Fetching stuff</Button></Link>
         </Card.Body>
       </Card>
     );
@@ -64,20 +64,20 @@ class App extends React.Component{
           <Navbar bg="light" expand="lg">
             <Navbar.Brand as={Link} to="/">Learning!</Navbar.Brand>
             <NavDropdown title="Options" id="basic-nav-dropdown" className="nav-item dropdown ml-auto">
-              <NavDropdown.Item as={Link} to={`/`}>Home</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to={`/temp-play`}>Play time</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to={`/fetching`}>Fetching</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to={`${process.env.PUBLIC_URL}/`}>Home</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to={`${process.env.PUBLIC_URL}/temp-play`}>Play time</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to={`${process.env.PUBLIC_URL}/fetching`}>Fetching</NavDropdown.Item>
             </NavDropdown>
           </Navbar>
           {/* A <Switch> looks through its children <Route>s and renders the first one that matches the current URL. */}
           <Switch>
-            <Route path={`/fetching`}>
+            <Route path={`${process.env.PUBLIC_URL}/fetching`}>
               <FetchingHack />
             </Route>
-            <Route path={`/temp-play`}>
+            <Route path={`${process.env.PUBLIC_URL}/temp-play`}>
               <TempPlay />
             </Route>                       
-            <Route path={`/`}>
+            <Route path={`${process.env.PUBLIC_URL}/`}>
               <Home />
             </Route>
           </Switch>
