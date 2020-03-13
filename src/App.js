@@ -45,7 +45,9 @@ class Home extends React.Component {
           <Card.Img variant="top" src='https://i.pinimg.com/236x/5c/2b/d9/5c2bd965c4d91122de012e636496e60c--swimming-photography-summer-photography.jpg' style={{ width: '18rem' }} />
           <p>
             <br />
-            A game of guessing fun for all the family and your crazy friends.
+            Just some fun for training
+            <br />
+            Environment is: <b>{process.env.REACT_APP_ENVIRONEMNT_NAME}</b>
           </p>
           <Link to={`/temp-play`}><Button variant="primary">Play time</Button></Link>
           {" "}
