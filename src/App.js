@@ -42,31 +42,30 @@ class Accelerometer extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      acc_x:0,
-      acc_y:0,
-      acc_z:0,
+      ori_x:0,
+      ori_y:0,
+      ori_z:0,
       windowWith: window.innerWidth
     }
   }
   componentDidMount(){
-    window.addEventListener('devicemotion', this.handleMotion);
+    window.removeEventListener("deviceorientation", this.handleOrientation);
     window.addEventListener('resize', this.handleResize)
   }
   componentWillUnmount(){
-    window.removeEventListener('devicemotion', this.handleMotion);
+    window.removeEventListener('deviceorientation', this.handleOrientation);
     window.removeEventListener('resize', this.handleResize)
   }
   handleResize = (event) => {
     this.setState({ windowWith: window.innerWidth });
-    document.getElementById("updatemeplease").innerHTML = window.innerWidth;
   }
   
-  handleMotion = (event) => {
+  handleOrientation = (event) => {
     document.getElementById("arewethere").innerHTML = "Here";
     this.setState({
-      acc_x:event.acceleration.x,
-      acc_y:event.acceleration.y,
-      acc_z:event.acceleration.z
+      ori_x:event.alpha,
+      ori_y:event.beta,
+      ori_z:event.gamma
     })
   } 
   
@@ -75,12 +74,10 @@ class Accelerometer extends React.Component {
       <Card>
         <Card.Body>
           <ListGroup>
-              <ListGroup.Item>Window width (no react)<span className="float-right"><span id="updatemeplease">{this.state.windowWith}</span></span></ListGroup.Item>
               <ListGroup.Item>Window width<span className="float-right">{this.state.windowWith}</span></ListGroup.Item>
-              <ListGroup.Item>X<span id="acc_x" className="float-right">{this.state.acc_x}</span></ListGroup.Item>
-              <ListGroup.Item>Y<span className="float-right">{this.state.acc_y}</span></ListGroup.Item>
-              <ListGroup.Item>Z<span className="float-right">{this.state.acc_z}</span></ListGroup.Item>
-              <ListGroup.Item>Triggering<span className="float-right"><span id="arewethere"></span></span></ListGroup.Item>
+              <ListGroup.Item>X<span id="acc_x" className="float-right">{this.state.ori_x}</span></ListGroup.Item>
+              <ListGroup.Item>Y<span className="float-right">{this.state.ori_y}</span></ListGroup.Item>
+              <ListGroup.Item>Z<span className="float-right">{this.state.ori_z}</span></ListGroup.Item>
             </ListGroup>
         </Card.Body>
       </Card>
