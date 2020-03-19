@@ -3,8 +3,9 @@ import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import ListGroup from 'react-bootstrap/ListGroup';
-import Card from 'react-bootstrap/Card'
-import Button from 'react-bootstrap/Button'
+import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -12,8 +13,9 @@ import {
   Link
 } from "react-router-dom";
 import FetchingHack from './components/FetchingHack';
+import Correct from './components/Correct';
+import InCorrect from './components/InCorrect';
 import './App.css';
-
 
 /**
  * 
@@ -26,13 +28,38 @@ import './App.css';
  */
 
 class TempPlay extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      playSound:""
+    }
+  }  
+  handleClickCorrect() {
+    this.setState({playSound:"Correct"});
+  }
+
+  handleClickInCorrect() {
+    this.setState({playSound:"InCorrect"});
+  }
+  playMySound(){
+    switch (this.state.playSound) {
+      case "Correct":
+        return (<Correct />);
+      case "InCorrect":
+        return (<InCorrect />);
+      default:
+        return "";
+    }  
+  }
 
   render() {
     return (
       <Card>
         <Card.Body>
-        
+          <Button onClick={() => this.handleClickCorrect()}>Correct</Button>
+          <Button variant="danger" onClick={() => this.handleClickInCorrect()}>In Correct</Button>
         </Card.Body>
+        {this.playMySound()}
       </Card>
     );
   }
@@ -42,17 +69,28 @@ class Accelerometer extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+      playSound:"",
+      lastPlayed:new Date(),
+      timeDiff:5000,
       ori_x:0,
       ori_y:0,
       ori_z:0,
+      acc_x:0,
+      acc_y:0,
+      acc_z:0,
+      gyr_x:0,
+      gyr_y:0,
+      gyr_z:0,            
       windowWith: window.innerWidth
     }
   }
   componentDidMount(){
-    window.removeEventListener("deviceorientation", this.handleOrientation);
+    window.addEventListener("devicemotion", this.handleMotion);
+    window.addEventListener("deviceorientation", this.handleOrientation);
     window.addEventListener('resize', this.handleResize)
   }
   componentWillUnmount(){
+    window.removeEventListener("devicemotion", this.handleMotion);
     window.removeEventListener('deviceorientation', this.handleOrientation);
     window.removeEventListener('resize', this.handleResize)
   }
@@ -60,26 +98,64 @@ class Accelerometer extends React.Component {
     this.setState({ windowWith: window.innerWidth });
   }
   
+  approx(val) {
+    return val.toFixed(2);
+  }
+
+  checkPlay(){
+
+  }
+
   handleOrientation = (event) => {
-    document.getElementById("arewethere").innerHTML = "Here";
     this.setState({
-      ori_x:event.alpha,
-      ori_y:event.beta,
-      ori_z:event.gamma
-    })
+      ori_x:this.approx(event.alpha),
+      ori_y:this.approx(event.beta),
+      ori_z:this.approx(event.gamma)
+    });
+    this.checkPlay();
   } 
   
+  handleMotion = (event) => {
+    this.setState({
+      gyr_z:this.approx(event.rotationRate.alpha),
+      gyr_x:this.approx(event.rotationRate.beta),
+      gyr_y:this.approx(event.rotationRate.gamma),
+      acc_x:this.approx(event.acceleration.x),
+      acc_y:this.approx(event.acceleration.y),
+      acc_z:this.approx(event.acceleration.z)
+    });
+    this.checkPlay();
+  } 
+
+  playSound(){
+    switch (this.state.playSound) {
+      case "Correct":
+        return (<Correct />);
+      case "InCorrect":
+        return (<InCorrect />);
+      default:
+        return "";
+    }  
+  }
+
   render() {
     return (
       <Card>
         <Card.Body>
           <ListGroup>
               <ListGroup.Item>Window width<span className="float-right">{this.state.windowWith}</span></ListGroup.Item>
-              <ListGroup.Item>X<span id="acc_x" className="float-right">{this.state.ori_x}</span></ListGroup.Item>
-              <ListGroup.Item>Y<span className="float-right">{this.state.ori_y}</span></ListGroup.Item>
-              <ListGroup.Item>Z<span className="float-right">{this.state.ori_z}</span></ListGroup.Item>
+              <ListGroup.Item>Orientation X<span className="float-right">{this.state.ori_x}</span></ListGroup.Item>
+              <ListGroup.Item>Orientation Y<span className="float-right">{this.state.ori_y}</span></ListGroup.Item>
+              <ListGroup.Item>Orientation Z<span className="float-right">{this.state.ori_z}</span></ListGroup.Item>
+              <ListGroup.Item>Gyro X<span className="float-right">{this.state.gyr_x}</span></ListGroup.Item>
+              <ListGroup.Item>Gyro Y<span className="float-right">{this.state.gyr_y}</span></ListGroup.Item>
+              <ListGroup.Item>Gyro Z<span className="float-right">{this.state.gyr_z}</span></ListGroup.Item>
+              <ListGroup.Item>Acceleration X<span className="float-right">{this.state.acc_x}</span></ListGroup.Item>
+              <ListGroup.Item>Acceleration Y<span className="float-right">{this.state.acc_y}</span></ListGroup.Item>
+              <ListGroup.Item>Acceleration Z<span className="float-right">{this.state.acc_z}</span></ListGroup.Item>
             </ListGroup>
         </Card.Body>
+        {this.playSound()}
       </Card>
     );
   }
