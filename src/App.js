@@ -5,6 +5,8 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
+import correctSound from './media/correct.wav'
+import incorrectSound from './media/incorrect.wav'
 
 import {
   BrowserRouter as Router,
@@ -14,7 +16,7 @@ import {
 } from "react-router-dom";
 import FetchingHack from './components/FetchingHack';
 import Correct from './components/Correct';
-import InCorrect from './components/InCorrect';
+import InCorrect from './components/InCorrect'; 
 import './App.css';
 
 /**
@@ -69,7 +71,6 @@ class Accelerometer extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      soundPlay:"",
       soundLastPlayed:new Date(),
       soundTimeDiff:2000,
       soundDegreeVar:20,
@@ -85,6 +86,10 @@ class Accelerometer extends React.Component {
       windowWith: window.innerWidth
     }
   }
+
+  audio_correct = new Audio(correctSound);
+  audio_incorrect = new Audio(incorrectSound);
+
   componentDidMount(){
     window.addEventListener("devicemotion", this.handleMotion);
     window.addEventListener("deviceorientation", this.handleOrientation);
@@ -97,10 +102,12 @@ class Accelerometer extends React.Component {
   }
   handleResize = (event) => {
     this.setState({ windowWith: window.innerWidth });
+    this.checkPlay();
   }
   
-  approx(val) {
-    return val.toFixed(2);
+  approx(value) {
+    if (value != null){return value.toFixed(2);}
+    return 0; 
   }
 
   checkPlay(){
@@ -108,12 +115,14 @@ class Accelerometer extends React.Component {
       //Its been soundTimeDiff/1000 seconds since tune was played
       if ((Math.abs(this.state.ori_y) > (180-this.state.soundDegreeVar)) && ((Math.abs(this.state.ori_z) < (0+this.state.soundDegreeVar)))){
           //When phone sideways, y is near 180, z is near 0 - phone tilted forward
-          this.setState({soundPlay:"correct", soundLastPlayed:new Date()})
+          this.setState({soundLastPlayed:new Date()});
+          this.audio_correct.play();
       }
       if ((Math.abs(this.state.ori_y) < (0+this.state.soundDegreeVar)) && ((Math.abs(this.state.ori_z) < (0+this.state.soundDegreeVar)))){
         //When phone sideways, y is near 0, z is near 0
-        this.setState({soundPlay:"InCorrect", soundLastPlayed:new Date()})
-    }      
+        this.setState({soundLastPlayed:new Date()});
+        this.audio_incorrect.play();
+      }
     }
   }
 
@@ -138,17 +147,6 @@ class Accelerometer extends React.Component {
     //this.checkPlay();
   } 
 
-  playSound(){
-    switch (this.state.soundPlay) {
-      case "Correct":
-        return (<Correct />);
-      case "InCorrect":
-        return (<InCorrect />);
-      default:
-        return "";
-    }  
-  }
-
   render() {
     return (
       <Card>
@@ -166,7 +164,6 @@ class Accelerometer extends React.Component {
               <ListGroup.Item>Acceleration Z<span className="float-right">{this.state.acc_z}</span></ListGroup.Item>
             </ListGroup>
         </Card.Body>
-        {this.playSound()}
       </Card>
     );
   }
