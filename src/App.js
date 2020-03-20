@@ -69,9 +69,10 @@ class Accelerometer extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      playSound:"",
-      lastPlayed:new Date(),
-      timeDiff:5000,
+      soundPlay:"",
+      soundLastPlayed:new Date(),
+      soundTimeDiff:2000,
+      soundDegreeVar:20,
       ori_x:0,
       ori_y:0,
       ori_z:0,
@@ -103,7 +104,17 @@ class Accelerometer extends React.Component {
   }
 
   checkPlay(){
-
+    if ((new Date() - this.state.soundLastPlayed)>this.state.soundTimeDiff){
+      //Its been soundTimeDiff/1000 seconds since tune was played
+      if ((Math.abs(this.state.ori_y) > (180-this.state.soundDegreeVar)) && ((Math.abs(this.state.ori_z) < (0+this.state.soundDegreeVar)))){
+          //When phone sideways, y is near 180, z is near 0 - phone tilted forward
+          this.setState({soundPlay:"correct", soundLastPlayed:new Date()})
+      }
+      if ((Math.abs(this.state.ori_y) < (0+this.state.soundDegreeVar)) && ((Math.abs(this.state.ori_z) < (0+this.state.soundDegreeVar)))){
+        //When phone sideways, y is near 0, z is near 0
+        this.setState({soundPlay:"InCorrect", soundLastPlayed:new Date()})
+    }      
+    }
   }
 
   handleOrientation = (event) => {
@@ -124,11 +135,11 @@ class Accelerometer extends React.Component {
       acc_y:this.approx(event.acceleration.y),
       acc_z:this.approx(event.acceleration.z)
     });
-    this.checkPlay();
+    //this.checkPlay();
   } 
 
   playSound(){
-    switch (this.state.playSound) {
+    switch (this.state.soundPlay) {
       case "Correct":
         return (<Correct />);
       case "InCorrect":
