@@ -192,6 +192,24 @@ class Home extends React.Component {
 }
 
 class App extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+    }
+    if (DeviceOrientationEvent) {
+      if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission()
+        .then(response => {
+          if (response === 'granted') {
+            //Doing this in sepearte components
+            //window.addEventListener('deviceorientation', (e) => {})
+          }
+        })
+      } else {
+        // non iOS 13+
+      }
+    }
+  }
   render() {
     return (
       <Router basename={'/learn'}>
