@@ -170,6 +170,25 @@ class Accelerometer extends React.Component {
 }
 
 class Home extends React.Component {
+
+  handleRequestOrientationButton() {
+    console.log('Handling test');
+    if (window.DeviceOrientationEvent) {
+      console.log('We have device orientation.');
+      if (typeof window.DeviceMotionEvent.requestPermission === 'function') {
+        window.DeviceOrientationEvent.requestPermission()
+        .then(response => {
+          if (response === 'granted') {
+            //Doing this in sepearte components
+            //window.addEventListener('deviceorientation', (e) => {})
+          }
+        })
+      } else {
+        // non iOS 13+
+      }
+    }
+  }
+
   render() {
     return (
       <Card>
@@ -185,6 +204,8 @@ class Home extends React.Component {
           <Link to={`/temp-play`}><Button variant="primary">Play time</Button></Link>
           {" "}
           <Link to={`/fetching`}><Button variant="primary">Fetching stuff</Button></Link>
+          {" "}
+          <Button onClick={() => this.handleRequestOrientationButton()} variant="dark">Orientation</Button>
         </Card.Body>
       </Card>
     );
@@ -196,20 +217,8 @@ class App extends React.Component{
     super(props);
     this.state = {
     }
-    if (DeviceOrientationEvent) {
-      if (typeof DeviceMotionEvent.requestPermission === 'function') {
-        DeviceOrientationEvent.requestPermission()
-        .then(response => {
-          if (response === 'granted') {
-            //Doing this in sepearte components
-            //window.addEventListener('deviceorientation', (e) => {})
-          }
-        })
-      } else {
-        // non iOS 13+
-      }
-    }
   }
+
   render() {
     return (
       <Router basename={'/learn'}>
