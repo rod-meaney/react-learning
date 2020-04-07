@@ -2,11 +2,8 @@ import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import ListGroup from 'react-bootstrap/ListGroup';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-import correctSound from './media/correct.wav'
-import incorrectSound from './media/incorrect.wav'
 
 import {
   BrowserRouter as Router,
@@ -15,8 +12,10 @@ import {
   Link
 } from "react-router-dom";
 import FetchingHack from './components/FetchingHack';
+import Accelerometer from './components/Accelerometer';
 import Correct from './components/Correct';
 import InCorrect from './components/InCorrect'; 
+import FetchingProper from './components/FetchingProper'; 
 import './App.css';
 
 /**
@@ -28,6 +27,19 @@ import './App.css';
  * npm install react-router-dom
  * 
  */
+
+class GoodFetch extends React.Component {
+  render() {
+    return (
+      <Card>
+        <Card.Body>
+          <h3>Just a simple fetch but done using hooks. Should use this for my stuff</h3>
+          <FetchingProper location="Europe/Berlin" />
+        </Card.Body>
+      </Card>
+    );
+  }
+}
 
 class TempPlay extends React.Component {
   constructor(props){
@@ -54,116 +66,19 @@ class TempPlay extends React.Component {
     }  
   }
 
+  playBuzzy() {
+    window.navigator.vibrate([200, 100, 200]);
+  }
+
   render() {
     return (
       <Card>
         <Card.Body>
-          <Button onClick={() => this.handleClickCorrect()}>Correct</Button>
-          <Button variant="danger" onClick={() => this.handleClickInCorrect()}>In Correct</Button>
+          <p><Button onClick={() => this.playBuzzy()}>Play Buzzy</Button></p>
+          <p><Button onClick={() => this.handleClickCorrect()}>Correct</Button></p>
+          <p><Button variant="danger" onClick={() => this.handleClickInCorrect()}>In Correct</Button></p>
         </Card.Body>
         {this.playMySound()}
-      </Card>
-    );
-  }
-}
-
-class Accelerometer extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      soundLastPlayed:new Date(),
-      soundTimeDiff:2000,
-      soundDegreeVar:20,
-      ori_x:0,
-      ori_y:0,
-      ori_z:0,
-      acc_x:0,
-      acc_y:0,
-      acc_z:0,
-      gyr_x:0,
-      gyr_y:0,
-      gyr_z:0,            
-      windowWith: window.innerWidth
-    }
-  }
-
-  audio_correct = new Audio(correctSound);
-  audio_incorrect = new Audio(incorrectSound);
-
-  componentDidMount(){
-    window.addEventListener("devicemotion", this.handleMotion);
-    window.addEventListener("deviceorientation", this.handleOrientation);
-    window.addEventListener('resize', this.handleResize)
-  }
-  componentWillUnmount(){
-    window.removeEventListener("devicemotion", this.handleMotion);
-    window.removeEventListener('deviceorientation', this.handleOrientation);
-    window.removeEventListener('resize', this.handleResize)
-  }
-  handleResize = (event) => {
-    this.setState({ windowWith: window.innerWidth });
-    this.checkPlay();
-  }
-  
-  approx(value) {
-    if (value != null){return value.toFixed(2);}
-    return 0; 
-  }
-
-  checkPlay(){
-    if ((new Date() - this.state.soundLastPlayed)>this.state.soundTimeDiff){
-      //Its been soundTimeDiff/1000 seconds since tune was played
-      if ((Math.abs(this.state.ori_y) > (180-this.state.soundDegreeVar)) && ((Math.abs(this.state.ori_z) < (0+this.state.soundDegreeVar)))){
-          //When phone sideways, y is near 180, z is near 0 - phone tilted forward
-          this.setState({soundLastPlayed:new Date()});
-          this.audio_correct.play();
-      }
-      if ((Math.abs(this.state.ori_y) < (0+this.state.soundDegreeVar)) && ((Math.abs(this.state.ori_z) < (0+this.state.soundDegreeVar)))){
-        //When phone sideways, y is near 0, z is near 0
-        this.setState({soundLastPlayed:new Date()});
-        this.audio_incorrect.play();
-      }
-    }
-  }
-
-  handleOrientation = (event) => {
-    this.setState({
-      ori_x:this.approx(event.alpha),
-      ori_y:this.approx(event.beta),
-      ori_z:this.approx(event.gamma)
-    });
-    this.checkPlay();
-  } 
-  
-  handleMotion = (event) => {
-    this.setState({
-      gyr_z:this.approx(event.rotationRate.alpha),
-      gyr_x:this.approx(event.rotationRate.beta),
-      gyr_y:this.approx(event.rotationRate.gamma),
-      acc_x:this.approx(event.acceleration.x),
-      acc_y:this.approx(event.acceleration.y),
-      acc_z:this.approx(event.acceleration.z)
-    });
-    //this.checkPlay();
-  } 
-
-  render() {
-    return (
-      <Card>
-        <Card.Body>
-          <ListGroup>
-              <ListGroup.Item>Window width<span className="float-right">{this.state.windowWith}</span></ListGroup.Item>
-              <ListGroup.Item>Orientation X<span className="float-right">{this.state.ori_x}</span></ListGroup.Item>
-              <ListGroup.Item>Orientation Y<span className="float-right">{this.state.ori_y}</span></ListGroup.Item>
-              <ListGroup.Item>Orientation Z<span className="float-right">{this.state.ori_z}</span></ListGroup.Item>
-              <ListGroup.Item>Gyro X<span className="float-right">{this.state.gyr_x}</span></ListGroup.Item>
-              <ListGroup.Item>Gyro Y<span className="float-right">{this.state.gyr_y}</span></ListGroup.Item>
-              <ListGroup.Item>Gyro Z<span className="float-right">{this.state.gyr_z}</span></ListGroup.Item>
-              <ListGroup.Item>Acceleration X<span className="float-right">{this.state.acc_x}</span></ListGroup.Item>
-              <ListGroup.Item>Acceleration Y<span className="float-right">{this.state.acc_y}</span></ListGroup.Item>
-              <ListGroup.Item>Acceleration Z<span className="float-right">{this.state.acc_z}</span></ListGroup.Item>
-            </ListGroup>
-        </Card.Body>
       </Card>
     );
   }
@@ -205,6 +120,8 @@ class Home extends React.Component {
           {" "}
           <Link to={`/fetching`}><Button variant="primary">Fetching stuff</Button></Link>
           {" "}
+          <Link to={`/good-fetch`}><Button variant="primary">Fetching stuff well</Button></Link>
+          {" "}
           <Button onClick={() => this.handleRequestOrientationButton()} variant="dark">Orientation</Button>
         </Card.Body>
       </Card>
@@ -240,6 +157,9 @@ class App extends React.Component{
             <Route path={`/temp-play`}>
               <TempPlay />
             </Route>
+            <Route path={`/good-fetch`}>
+              <GoodFetch />
+            </Route>   
             <Route path={`/accelerometer`}>
               <Accelerometer />
             </Route>            
